@@ -82,14 +82,34 @@ def test_with_outdated_payments():
 
 
 def test_reallive_service_1():
+    next_payment_date = datetime(2027, 11, 28)
+
     assert compute_next_payment_date(
         sub_start_date=datetime(2025, 11, 28),
         payments=[
             # gift card with defer next billing
-            Payment(pay_date=datetime(2022, 6, 14), sub_start_date=datetime(2024, 11, 28), sub_duration=366, is_defer_next_billing=True),
+            Payment(pay_date=datetime(2022, 6, 14), sub_start_date=datetime(2024, 11, 28), sub_duration=365, is_defer_next_billing=True),
             Payment(pay_date=datetime(2022, 7, 31), sub_start_date=datetime(2025, 11, 28), sub_duration=365, is_defer_next_billing=True),
             Payment(pay_date=datetime(2024, 8, 26), sub_start_date=datetime(2026, 11, 28), sub_duration=365, is_defer_next_billing=True),
-        ]) == datetime(2027, 11, 28)
+        ]) == next_payment_date
+
+    assert compute_next_payment_date(
+        sub_start_date=datetime(2025, 11, 28),
+        payments=[
+            # gift card with defer next billing
+            Payment(pay_date=datetime(2022, 6, 14), sub_start_date=datetime(2024, 11, 28), sub_duration=365, is_defer_next_billing=True),
+            Payment(pay_date=datetime(2022, 7, 31), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+            Payment(pay_date=datetime(2024, 8, 26), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+        ]) == next_payment_date
+
+    assert compute_next_payment_date(
+        sub_start_date=datetime(2025, 11, 28),
+        payments=[
+            # gift card with defer next billing
+            Payment(pay_date=datetime(2022, 6, 14), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+            Payment(pay_date=datetime(2022, 7, 31), sub_start_date=datetime(2025, 11, 28), sub_duration=365, is_defer_next_billing=True),
+            Payment(pay_date=datetime(2024, 8, 26), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+        ]) == next_payment_date
 
 
 def test_reallive_service_2():
