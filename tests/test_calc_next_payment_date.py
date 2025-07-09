@@ -57,7 +57,7 @@ def test_gift_cards():
     assert calc_next_payment_date(sub_start_date=sub_start_date, payments=payments) == datetime(2027, 1, 1)
 
 
-def test_without_outdated_payments():
+def test_with_outdated_payments():
     sub_start_date = datetime(2025, 1, 1)
 
     assert calc_next_payment_date(
