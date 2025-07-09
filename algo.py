@@ -42,6 +42,6 @@ def calc_next_payment_date(sub_start_date: datetime, payments: list[Payment]) ->
         # ensure sorted by pay_date
         payments = sorted(payments, key=lambda p: p.pay_date)
         if payments_defered := [p for p in payments if p.is_defer_next_billing]:
-            return payments_defered[-1].get_sub_end_date(payments_defered[:-1])
+            return max(sub_start_date, payments_defered[-1].get_sub_end_date(payments_defered[:-1]))
 
     return sub_start_date

@@ -55,3 +55,27 @@ def test_gift_cards():
         Payment(pay_date=datetime(2026, 4, 1), sub_start_date=None, sub_duration=365, is_defer_next_billing=False)
     )
     assert calc_next_payment_date(sub_start_date=sub_start_date, payments=payments) == datetime(2027, 1, 1)
+
+
+def test_without_outdated_payments():
+    sub_start_date = datetime(2025, 1, 1)
+
+    assert calc_next_payment_date(
+        sub_start_date=sub_start_date,
+        payments=[
+            # outdated payments:
+            Payment(pay_date=datetime(2015, 1, 1), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+            # auto payments:
+            Payment(pay_date=datetime(2025, 1, 1), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+        ]) == datetime(2026, 1, 1)
+
+    # if only has gift card, should starts with `sub_start_date`:
+    assert calc_next_payment_date(
+        sub_start_date=sub_start_date,
+        payments=[
+            # outdated payments:
+            Payment(pay_date=datetime(2015, 1, 1), sub_start_date=None, sub_duration=365, is_defer_next_billing=True),
+            # gift card:
+            Payment(pay_date=datetime(2024, 8, 8), sub_start_date=None, sub_duration=365, is_defer_next_billing=False),
+            Payment(pay_date=datetime(2025, 4, 4), sub_start_date=None, sub_duration=365, is_defer_next_billing=False),
+        ]) == datetime(2025, 1, 1)
