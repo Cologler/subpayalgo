@@ -1,0 +1,2 @@
+# subpayalgo
+Subscription payment algorithm
