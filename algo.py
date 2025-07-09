@@ -5,6 +5,7 @@
 # 
 # ----------
 
+import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -37,7 +38,7 @@ class Payment:
         return sub_start_date + timedelta(days=self.sub_duration)
 
 
-def calc_next_payment_date(sub_start_date: datetime, payments: list[Payment]) -> datetime:
+def compute_next_payment_date(sub_start_date: datetime, payments: list[Payment]) -> datetime:
     if payments:
         # ensure sorted by pay_date
         payments = sorted(payments, key=lambda p: p.pay_date)
@@ -45,3 +46,13 @@ def calc_next_payment_date(sub_start_date: datetime, payments: list[Payment]) ->
             return max(sub_start_date, payments_defered[-1].get_sub_end_date(payments_defered[:-1]))
 
     return sub_start_date
+
+
+def compute_remaining_subscription_period(today: datetime, payments: list[Payment]) -> float:
+    assert payments
+
+    # ensure sorted by pay_date
+    payments = sorted(payments, key=lambda p: p.pay_date)
+    ts = (payments[-1].get_sub_end_date(payments[:-1]) - today).total_seconds()
+    days = ts / 60 / 60 / 24
+    return days
